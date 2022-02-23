@@ -1,0 +1,13 @@
+/__pycache__
+*.pyc
+*.spec
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+
+
+# 去除svn版本控制文件
+.svn
