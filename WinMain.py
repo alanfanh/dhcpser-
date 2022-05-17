@@ -78,7 +78,7 @@ class RunThread(QtCore.QThread):
         return ipaddr
     
     def poolfree(self,mac):
-        if self.clients.has_key(mac):
+        if mac in self.clients:
             return self.clients[mac]
         ipaddr = self.randomip(self.s_num,self.e_num)
         return ipaddr
@@ -433,11 +433,11 @@ class Form(QWidget):
         guidict['bootp']['relpy_offer']=self.ui.replyDiscover.text()
         guidict['bootp']['t1']=self.ui.t1.text()
         guidict['bootp']['t2']=self.ui.t2.text()
-        for key,value in init_dict.iteritems():
+        for key,value in init_dict.items():
             cf.add_section(key)
-            for k,v in value.iteritems():
-                if guidict.has_key(key):
-                    if guidict[key].has_key(k):
+            for k,v in value.items():
+                if key in guidict:
+                    if k in guidict[key]:
                         cf.set(key, k, guidict[key][k])
                         continue
                 cf.set(key, k, v)
