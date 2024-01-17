@@ -41,7 +41,7 @@ class RunThread(QtCore.QThread):
         self.filter="arp or icmp or (udp and src port 68 and dst port 67)"
         self.lease_time = int(self.parent.config['bootp']['leasetime'])
         self.renewal_time = int(int(self.lease_time)/2)
-        self.rebinding_time = 7*int(self.lease_time)/8
+        self.rebinding_time = int(7*int(self.lease_time)/8)
         self.subnet_mask = self.parent.config['bootp']['submask']
         self.router = self.parent.config['bootp']['routers']
         self.routerlist = self.parent.config['bootp']['routerlist']
@@ -125,10 +125,10 @@ class RunThread(QtCore.QThread):
             #如果这里不添加DHCP,后面添加DHCP就会报错
             raw[BOOTP]=BOOTP(op=2,xid=pkt[BOOTP].xid,chaddr=self.mac2bin(pkt[Ether].src),yiaddr="0.0.0.0",giaddr='0.0.0.0')/DHCP()
             # DhcpOption=[("server_id",self.sip),('lease_time',self.lease_time),("subnet_mask",self.subnet_mask),("router",self.router),('renewal_time',self.renewal_time),('name_server',self.name_server),('rebinding_time',self.rebinding_time)]
-            name_server=self.ip2bin(self.name_server)
+            name_server=self.handle_dns(self.name_server)
             #print "name_server",name_server
             # name_server='\xdf\x01\x02\x03\xdf\x01\x02\x04'
-            DhcpOption=[("server_id",self.sip),('lease_time',self.lease_time),("subnet_mask",self.subnet_mask),("router",self.router),('renewal_time',self.renewal_time),(6,name_server),('rebinding_time',self.rebinding_time)]
+            DhcpOption=[("server_id",self.sip),('lease_time',self.lease_time),("subnet_mask",self.subnet_mask),("router",self.router),('renewal_time',self.renewal_time),name_server,('rebinding_time',self.rebinding_time)]
             type=pkt[DHCP].options[0][1] ;#获取得到option 53字段的内容
             # raw[]
             print("pkt[DHCP].options",pkt[DHCP].options)
@@ -333,6 +333,12 @@ class RunThread(QtCore.QThread):
         # hexstr="".join(map(lambda x:"%02x" %(int(x)),hexlist))
         binip="".join(map(lambda x:chr(int(x)),hexlist))
         return binip
+
+    def handle_dns(self, s):
+        # 处理传入dns值，s="8.8.8.8 114.114.114.114"
+        res = ['name_server']
+        dns = s.split(" ")
+        return tuple(res+dns)
 
     def parser_ipnet(self,ipnet="",gw=""):
         # 主要根据IP和子网掩码得到网络地址
