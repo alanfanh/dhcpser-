@@ -5,7 +5,6 @@ import re
 import json
 import configparser
 import random
-# import dnet
 import binascii
 import wmi
 import IPy
@@ -15,7 +14,7 @@ from PySide6.QtCore import SIGNAL
 from PySide6.QtWidgets import QWidget,QApplication
 from common.Form_Main import Ui_Form
 from common.Global import *
-from scapy.all import *
+from scapy.all import ARP,ICMP,Ether,IP,UDP,BOOTP,DHCP,Raw,reduce,sniff,sendp,mac2str
 
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
@@ -449,16 +448,7 @@ class Form(QWidget):
 
     def init_iface(self):
         print("start iface")
-        maciface = self.get_macMapIface()
-        macdesc = self.get_macMapDesc()
-        keys = maciface.keys()
         ifacelst = self.get_iface()
-        for key in keys:
-            try:
-                ifacelst.append(macdesc[key])
-                self.index_iface[macdesc[key]]=maciface[key]
-            except:
-                pass
         for iface in ifacelst:
             self.ui.iface.addItem(iface.strip())
         self.connect(self.ui.iface,SIGNAL("currentIndexChanged(int)"),self.select_iface)
@@ -491,25 +481,7 @@ class Form(QWidget):
             mac_ip[iface.MACAddress]=iface.IPADDRESS[0]
             # iface_list.append(iface_desc)
         print(desc_mac[desc])
-        return desc_mac[desc]    
-
-    def get_macMapIface(self):
-        # 得到MAC地址和索引的映射
-        ifacelist=[]
-        ifacedict = {}
-        for x in range(30):
-            try:
-                iface="eth%s" %(x)
-                obj=dnet.eth(iface)
-                mac = binascii.b2a_hex(obj.get()).upper()
-                ifacedict[mac] = iface
-                self.macdict[iface] = {}
-                self.macdict[iface]['mac'] = mac
-                ifacelist.append(iface)
-            except Exception as e:
-                pass
-        # print "ifacedict=",ifacedict
-        return ifacedict
+        return desc_mac[desc]
 
     def get_macMapDesc(self):
         c = wmi.WMI()
