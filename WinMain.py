@@ -40,7 +40,7 @@ class RunThread(QtCore.QThread):
         self.sip = self.parent.config['bootp']['routers']
         self.filter="arp or icmp or (udp and src port 68 and dst port 67)"
         self.lease_time = int(self.parent.config['bootp']['leasetime'])
-        self.renewal_time = int(self.lease_time)/2
+        self.renewal_time = int(int(self.lease_time)/2)
         self.rebinding_time = 7*int(self.lease_time)/8
         self.subnet_mask = self.parent.config['bootp']['submask']
         self.router = self.parent.config['bootp']['routers']
@@ -159,7 +159,7 @@ class RunThread(QtCore.QThread):
                             raw[BOOTP].yiaddr=request_ip
                         else:
                             raw[BOOTP].yiaddr=your_ip
-                        DhcpOption.insert(0,("message-type","offer"))
+                        DhcpOption.insert(0,("message-type", 2))
                         options_all=self.add_option(DhcpOption)
                         options_all.append("end")
                         options_all.append(mac2str("00")*20)
