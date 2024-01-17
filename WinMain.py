@@ -99,7 +99,7 @@ class RunThread(QtCore.QThread):
         return False
 
     def mac2bin(self,mac):
-        return "" .join(map(lambda x:binascii.a2b_hex(x),mac.split(":")))
+        return b"".join(map(lambda x:binascii.a2b_hex(x),mac.split(":")))
 
     def run(self):
         sniff(filter=self.filter,prn=self.detect_parserDhcp,store=0,iface=self.iface)
