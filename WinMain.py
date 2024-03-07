@@ -1,27 +1,24 @@
 # -*- coding: utf-8 -*-
-import sys,os
+import sys
 import time
 import re
-import json
 import configparser
 import random
 import binascii
 import wmi
 import IPy
-# import Queue
-from PySide6 import QtCore,QtGui
-from PySide6.QtCore import SIGNAL
-from PySide6.QtWidgets import QWidget,QApplication
+from PySide6.QtCore import QThread, SIGNAL, Signal
+from PySide6.QtWidgets import QWidget, QApplication, QMessageBox
+from scapy.all import ARP, ICMP, Ether, IP, UDP, BOOTP, DHCP, Raw, reduce, sniff, sendp, mac2str
 from common.Form_Main import Ui_Form
 from common.Global import *
-from scapy.all import ARP,ICMP,Ether,IP,UDP,BOOTP,DHCP,Raw,reduce,sniff,sendp,mac2str
 
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
 
-class RunThread(QtCore.QThread):
+class RunThread(QThread):
     #把打印的字符串发送给UI主线程
-    singal_sendnum= QtCore.Signal(str) # 已发送数据包个数
+    singal_sendnum= Signal(str) # 已发送数据包个数
     def __init__(self, parent=None):
         super(RunThread, self).__init__(parent)
         self.parent = parent
@@ -450,7 +447,7 @@ class Form(QWidget):
             cf.write(f)
         self.config=readcfg()
         if flag:
-            QtGui.QMessageBox.information(self,"savecfg",u"保存配置成功",QtGui.QMessageBox.Yes)
+            QMessageBox.information(self,"savecfg",u"保存配置成功", QMessageBox.Yes)
 
     def init_iface(self):
         print("start iface")

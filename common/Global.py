@@ -1,6 +1,6 @@
 #coding=utf8
-import os,sys
-import time
+import os
+import sys
 import configparser
 
 def cur_file_dir():
